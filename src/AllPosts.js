@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import supList from './supList.js';
 import IndividualSup from './IndividualSup.js';
 import SortForm from './SortForm';
+import getData from './getUserPosts.js'
 
 
 class AllPosts extends Component {
@@ -15,7 +15,12 @@ class AllPosts extends Component {
   }
   
   componentDidMount() {
-    this.setState({supListState: supList})
+    this.fetchData()
+      .then(res => this.setState({supListState: res}))
+  }
+
+  fetchData() {
+    return getData.getUserPosts();
   }
 
   render() {
@@ -31,20 +36,30 @@ class AllPosts extends Component {
     let FormSubmit = (event) => {
       event.preventDefault();
       let username = event.target.username.value;
-      let postID = event.target.postid.value;
+      let postID = Number(event.target.postid.value);
       let newSupList=[];
-      if (username === '') {
-        newSupList = supList.filter( sup => sup.postID === postID)
-      } else { 
-        newSupList = supList.filter( sup => sup.username === username)
-      }
-      return this.setState( {supListState: newSupList, formNameState: '', formIDState: ''} )
+      //I know that a better way to do this would be to query the parameters exactly but unfortunately this backend does not support username query//
+      this.fetchData().then( (list) => {
+        if (username === '') {
+          newSupList = list.filter( sup => sup.id === postID)
+        } else { 
+          newSupList = list.filter( sup => sup.name === username)
+        }
+        return this.setState( {supListState: newSupList, formNameState: '', formIDState: ''} )
+        });
       }
 
+      let FormReset = (event) => {
+        event.preventDefault();
+        this.fetchData().then( (res) => {
+          return this.setState( {supListState: res, formNameState: '', formIDState: ''} )
+          });
+        }
+
     return <div className="App">
-        <SortForm nameValue={formNameState} idValue={formIDState} nameHandleChange={nameHandleChange} idHandleChange={idHandleChange} FormSubmit={FormSubmit}/>
+        <SortForm nameValue={formNameState} idValue={formIDState} nameHandleChange={nameHandleChange} idHandleChange={idHandleChange} FormSubmit={FormSubmit} FormReset={FormReset}/>
         <div>{
-          supListState.map( sup =>  <IndividualSup key={sup.postID} sup={sup} />)
+          supListState.map( sup =>  <IndividualSup key={sup.id} sup={sup} />)
         }</div>
       </div>
     }

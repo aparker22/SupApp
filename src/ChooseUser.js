@@ -1,15 +1,31 @@
-import React from 'react';
+import React, {Component} from 'react';
 import LinkToUserPage from './LinkToUserPage.js';
-import supList from './supList';
+import getData from './getUserPosts.js'
 
+class ChooseUser extends Component {
 
-let getUserNames = (supList) => {
-    let newList = [...new Set(supList.map(sup => sup.username))];
-    return newList;
-};
+    constructor(props) {
+        super(props);
+        this.state = {
+          userList: [],
 
+        }
+    }
 
-let ChooseUser = (props) => {
+    componentDidMount() {
+        getData.getUserInformation()
+        .then(res => this.setState({userList: res}))
+    }
+    
+
+    render() {
+    let props = this.props;
+    let {userList} = this.state;
+
+    let getUserNames = () => {
+        let newList = [...new Set(userList.map(sup => sup.name))];
+        return newList;
+    };
 
     return <div className="App">
     <form className="chooseUserName" onSubmit= {(event) => {
@@ -17,11 +33,12 @@ let ChooseUser = (props) => {
     }}>
         <p>Choose User</p>
           <select name="username">{
-              getUserNames(supList).map(name => <option value={name}>{name}</option>)
+              getUserNames().map(name=><option key={name} value={name}>{name}</option>)
           }</select>
         <input type="submit" value="Submit"></input>
         </form>
     </div>
+    }
 }
 
 export default ChooseUser;

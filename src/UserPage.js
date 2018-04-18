@@ -1,31 +1,47 @@
 import React, {Component} from 'react';
-import supList from './supList.js';
-import IndividualSup from './IndividualSup.js';
+import getData from './getUserPosts.js'
+import DisplayUser from './DisplayUser';
+import IndividualSup from './IndividualSup.js'
 
 class UserPage extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      supListState: [],
-      formNameState: '',
-      formIDState: '',
+      userList: [],
+      postList: [],
     }
   }
 
+  componentDidMount() {
+    getData.getUserInformation()
+    .then(res => this.setState({userList: res}));
+    getData.getUserPosts()
+    .then(res=> this.setState({postList: res}));
+}
+
   render() {
   let props = this.props;
+  let { userList, postList} = this.state;
+  
+  let listPosts = ({id}) => {
+    let list = postList.filter((post) => post.id === id);
+    return list.map( sup => <IndividualSup key={sup.id} sup={sup} />)
+  }
+
+  let ListUsers = (foundUser) => userList.map( (user) => {
+    if (user.name === props.match.params.username) {
+      return <DisplayUser user={user} key={user.name} ListPosts={listPosts}/>
+    } else {
+      return '';
+    }
+  })
+
   return <div className="App">
   <h1>Welcome to {props.match.params.username}'s profile!</h1>
   <div>
   <div>{
-      supList.map( (sup) => {
-        if (sup.username === props.match.params.username) {
-          return <IndividualSup key={sup.postID} sup={sup} />
-        } else {
-          return '';
-        }
-      })
+    <ListUsers />
   }</div>
   </div>
   </div>
