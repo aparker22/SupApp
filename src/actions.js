@@ -1,6 +1,17 @@
 
-export const FETCH_SUPLIST = 'FETCH_SUPLIST';
-export const fetchSupList = (newSupList) => ({type: FETCH_SUPLIST, payload: newSupList});
+const FETCH_SUPLIST = 'FETCH_SUPLIST';
+export let fetchSupList = (newSupList) => ({type: FETCH_SUPLIST, payload: newSupList});
+let fetchSupListReducer = (state, action) => ({...state, supList:action.payload});
+fetchSupList.toString = () => FETCH_SUPLIST;
 
-export const FETCH_USERLIST = 'FETCH_USERLIST';
-export const fetchUserList = (newUserList) => ({type: FETCH_USERLIST, payload: newUserList});
+const FETCH_USERLIST = 'FETCH_USERLIST';
+export let fetchUserList = (newUserList) => ({type: FETCH_USERLIST, payload: newUserList});
+let fetchUserListReducer = (state, action) => ({...state, userList:action.payload});
+fetchUserList.toString = () => FETCH_USERLIST;
+
+let reducers = ({
+    [fetchSupList]: fetchSupListReducer,
+    [fetchUserList]: fetchUserListReducer,
+})
+
+export default reducers;

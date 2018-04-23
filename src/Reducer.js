@@ -1,17 +1,16 @@
 import hardCodedList from './supList';
-import {FETCH_SUPLIST, FETCH_USERLIST} from './actions';
+import reducers from './actions';
 
 
-const initialState = {supList: hardCodedList, userList: []};   
+const initialState = {supList: hardCodedList, userList: []};  
 
-let reducer = (oldState = initialState, action) => {
-	switch (action.type) {
-        case FETCH_SUPLIST:
-            return {...oldState, supList:action.payload};
-        case FETCH_USERLIST:
-            return {...oldState, userList:action.payload};
-        default: return oldState;
-    }
+let fallbackReducer = state => state; 
+
+let reducer = (state = initialState, action) => {
+    let babyReducer = reducers[action.type];
+    babyReducer = babyReducer || fallbackReducer;
+    let newState = babyReducer(state, action);
+    return newState;
 }
 
 export default reducer;
