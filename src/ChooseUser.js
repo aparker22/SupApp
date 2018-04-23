@@ -1,26 +1,28 @@
 import React, {Component} from 'react';
 import LinkToUserPage from './LinkToUserPage.js';
-import getData from './getUserPosts.js'
+import getData from './getUserPosts.js';
+import {connect} from 'react-redux';
+import {fetchUserList} from './actions';
 
-class ChooseUser extends Component {
+let mapStateToProps = (state) => {
+    return {userList: state.userList}
+  };
+  
+let mapDispatchToProps = (dispatch) => {
+return {dispatch: dispatch}
+};
 
-    constructor(props) {
-        super(props);
-        this.state = {
-          userList: [],
-
-        }
-    }
+class ChooseUserPage extends Component {
 
     componentDidMount() {
+        let {dispatch} = this.props;
         getData.getUserInformation()
-        .then(res => this.setState({userList: res}))
+        .then(newUserList => dispatch(fetchUserList(newUserList)))
     }
     
-
     render() {
     let props = this.props;
-    let {userList} = this.state;
+    let {userList} = this.props;
 
     let getUserNames = () => {
         let newList = [...new Set(userList.map(sup => sup.name))];
@@ -40,5 +42,7 @@ class ChooseUser extends Component {
     </div>
     }
 }
+
+let ChooseUser = connect(mapStateToProps, mapDispatchToProps)(ChooseUserPage);
 
 export default ChooseUser;

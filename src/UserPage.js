@@ -1,31 +1,34 @@
 import React, {Component} from 'react';
 import getData from './getUserPosts.js'
 import DisplayUser from './DisplayUser';
-import IndividualSup from './IndividualSup.js'
+import IndividualSup from './IndividualSup.js';
+import {fetchUserList, fetchSupList} from './actions';
+import {connect} from 'react-redux';
 
-class UserPage extends Component {
+let mapStateToProps = (state) => {
+  return {supList: state.supList, userList: state.userList}
+};
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      userList: [],
-      postList: [],
-    }
-  }
+let mapDispatchToProps = (dispatch) => {
+return {dispatch: dispatch}
+};
+
+class UserInfoPage extends Component {
 
   componentDidMount() {
+    let {dispatch} = this.props;
     getData.getUserInformation()
-    .then(res => this.setState({userList: res}));
+    .then(newUserList => dispatch(fetchUserList(newUserList)))
     getData.getUserPosts()
-    .then(res=> this.setState({postList: res}));
+    .then(newSupList => dispatch(fetchSupList(newSupList)));
 }
 
   render() {
+  let { userList, supList } = this.props;
   let props = this.props;
-  let { userList, postList} = this.state;
   
   let listPosts = ({id}) => {
-    let list = postList.filter((post) => post.id === id);
+    let list = supList.filter((sup) => sup.id === id);
     return list.map( sup => <IndividualSup key={sup.id} sup={sup} />)
   }
 
@@ -47,5 +50,7 @@ class UserPage extends Component {
   </div>
   }
 }
+
+let UserPage = connect(mapStateToProps, mapDispatchToProps)(UserInfoPage)
 
 export default UserPage;
